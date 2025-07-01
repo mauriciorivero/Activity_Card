@@ -1,0 +1,17 @@
+{
+  "name": "activity-dashboard",
+  "version": "1.0.0",
+  "description": "Skills dashboard and activity list application",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve -s . -l 3000",
+    "build": "echo 'Build complete - static files ready'",
+    "start": "npx serve -s . -l 3000"
+  },
+  "keywords": ["dashboard", "skills", "education"],
+  "author": "Musar Home Education",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
