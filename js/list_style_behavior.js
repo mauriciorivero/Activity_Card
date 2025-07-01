@@ -48,7 +48,7 @@ fetch('data/logica_dba.json')
             <p class="card-subtitle">Nivel: ${item.nivel}</p>
           </div>
           <div class="card-body">
-            <div class="geometric-shape"></div>
+            <div class="card-image-placeholder"></div>
           </div>
           <div class="card-footer">
             <p class="card-description">${item.enunciado}</p>
