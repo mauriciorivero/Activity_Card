@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Dashboard - Cyberpunk Style</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .level-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .level-badge {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 2px solid #00ffff;
+            font-weight: 700;
+        }
+        
+        .credits {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .dashboard-container {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .skills-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .skills-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ff6b35;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .points-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .points-badge {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .skill-category {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 107, 53, 0.1));
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-category:hover {
+            border-color: #ff6b35;
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .category-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .category-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 10px;
+        }
+        
+        .category-progress {
+            font-size: 1rem;
+            color: #00ffff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .skills-tree {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .skill-node {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            border: 2px solid #444;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skill-node:hover {
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+        
+        .skill-node.unlocked {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border-color: #ff6b35;
+            color: #000;
+            font-weight: 700;
+        }
+        
+        .skill-node.available {
+            background: linear-gradient(135deg, #00ffff, #0099cc);
+            border-color: #00ffff;
+            color: #000;
+            font-weight: 700;
+        }
+        
+        .skill-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .skill-name {
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .skill-level {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .center-node {
+            grid-column: 2;
+            grid-row: 2;
+            background: linear-gradient(135deg, #ffff00, #ffa500);
+            border-color: #ffff00;
+            color: #000;
+            transform: scale(1.1);
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            height: 2px;
+            opacity: 0.5;
+        }
+        
+        .skill-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 200px;
+        }
+        
+        .skill-node:hover .skill-tooltip {
+            opacity: 1;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+        }
+        
+        .skill-node.available {
+            animation: pulse 2s infinite;
+        }
+        
+        .stats-panel {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats-title {
+            color: #ff6b35;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .stat-value {
+            color: #00ffff;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="level-info">
+            <div class="level-badge">NIVEL 18</div>
+            <div class="level-badge">EXP: 850/1000</div>
+        </div>
+        <div class="credits">1567 PUNTOS</div>
+    </div>
+    
+    <div class="dashboard-container">
+        <div class="skills-header">
+            <h1 class="skills-title">DESARROLLO DE COMPETENCIAS</h1>
+            <div class="points-info">
+                <div class="points-badge">PUNTOS DISPONIBLES: 8</div>
+                <div class="points-badge">PUNTOS USADOS: 42</div>
+            </div>
+        </div>
+        
+        <div class="skills-grid">
+            <!-- Programación -->
+            <div class="skill-category">
+                <div class="category-header">
+                    <div class="category-name">Programación</div>
+                    <div class="category-progress">7/9</div>
+                </div>
+                <div class="skills-tree">
+                    <div class="skill-node unlocked" onclick="showSkillInfo('HTML/CSS', 'Dominio avanzado en maquetación y estilos')">
+                        <div class="skill-icon">🌐</div>
+                        <div class="skill-name">HTML/CSS</div>
+                        <div class="skill-level">5</div>
+                    </div>
+                    <div class="skill-node available" onclick="showSkillInfo('React', 'Framework para aplicaciones interactivas')">
+                        <div class="skill-icon">⚛️</div>
+                        <div class="skill-name">React</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🐍</div>
+                        <div class="skill-name">Python</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">💾</div>
+                        <div class="skill-name">Bases de Datos</div>
+                        <div class="skill-level">3</div>
+                    </div>
+                    <div class="skill-node center-node unlocked">
+                        <div class="skill-icon">💻</div>
+                        <div class="skill-name">Full Stack</div>
+                        <div class="skill-level">6</div>
+                    </div>
+                    <div class="skill-node available">
+                        <div class="skill-icon">☁️</div>
+                        <div class="skill-name">Cloud</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🔧</div>
+                        <div class="skill-name">DevOps</div>
+                        <div class="skill-level">2</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">🤖</div>
+                        <div class="skill-name">IA/ML</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🔒</div>
+                        <div class="skill-name">Seguridad</div>
+                        <div class="skill-level">3</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Diseño -->
+            <div class="skill-category">
+                <div class="category-header">
+                    <div class="category-name">Diseño</div>
+                    <div class="category-progress">5/9</div>
+                </div>
+                <div class="skills-tree">
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🎨</div>
+                        <div class="skill-name">UI Design</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node available">
+                        <div class="skill-icon">👤</div>
+                        <div class="skill-name">UX Research</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">📱</div>
+                        <div class="skill-name">Mobile Design</div>
+                        <div class="skill-level">3</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🖼️</div>
+                        <div class="skill-name">Photoshop</div>
+                        <div class="skill-level">5</div>
+                    </div>
+                    <div class="skill-node center-node unlocked">
+                        <div class="skill-icon">✨</div>
+                        <div class="skill-name">Design Thinking</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node available">
+                        <div class="skill-icon">🔧</div>
+                        <div class="skill-name">Figma</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">🎬</div>
+                        <div class="skill-name">Motion Graphics</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🌈</div>
+                        <div class="skill-name">Branding</div>
+                        <div class="skill-level">3</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">🖨️</div>
+                        <div class="skill-name">Print Design</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gestión de Proyectos -->
+            <div class="skill-category">
+                <div class="category-header">
+                    <div class="category-name">Gestión</div>
+                    <div class="category-progress">6/9</div>
+                </div>
+                <div class="skills-tree">
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">📊</div>
+                        <div class="skill-name">Scrum</div>
+                        <div class="skill-level">5</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">📈</div>
+                        <div class="skill-name">Kanban</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node available">
+                        <div class="skill-icon">🎯</div>
+                        <div class="skill-name">OKRs</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">👥</div>
+                        <div class="skill-name">Liderazgo</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node center-node unlocked">
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-name">Agile</div>
+                        <div class="skill-level">5</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">💬</div>
+                        <div class="skill-name">Comunicación</div>
+                        <div class="skill-level">5</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">📋</div>
+                        <div class="skill-name">Planificación</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">💰</div>
+                        <div class="skill-name">Presupuesto</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">⚖️</div>
+                        <div class="skill-name">Riesgos</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Marketing Digital -->
+            <div class="skill-category">
+                <div class="category-header">
+                    <div class="category-name">Marketing</div>
+                    <div class="category-progress">4/9</div>
+                </div>
+                <div class="skills-tree">
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">🔍</div>
+                        <div class="skill-name">SEO</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node available">
+                        <div class="skill-icon">💲</div>
+                        <div class="skill-name">SEM</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">📱</div>
+                        <div class="skill-name">Social Media</div>
+                        <div class="skill-level">5</div>
+                    </div>
+                    <div class="skill-node unlocked">
+                        <div class="skill-icon">📧</div>
+                        <div class="skill-name">Email Marketing</div>
+                        <div class="skill-level">3</div>
+                    </div>
+                    <div class="skill-node center-node unlocked">
+                        <div class="skill-icon">🎯</div>
+                        <div class="skill-name">Strategy</div>
+                        <div class="skill-level">4</div>
+                    </div>
+                    <div class="skill-node available">
+                        <div class="skill-icon">📊</div>
+                        <div class="skill-name">Analytics</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">🎥</div>
+                        <div class="skill-name">Video Marketing</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">🤝</div>
+                        <div class="skill-name">Influencers</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                    <div class="skill-node">
+                        <div class="skill-icon">📝</div>
+                        <div class="skill-name">Content</div>
+                        <div class="skill-level">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-panel">
+        <div class="stats-title">ESTADÍSTICAS</div>
+        <div class="stat-item">
+            <span>Total Skills:</span>
+            <span class="stat-value">36</span>
+        </div>
+        <div class="stat-item">
+            <span>Desbloqueadas:</span>
+            <span class="stat-value">22</span>
+        </div>
+        <div class="stat-item">
+            <span>Disponibles:</span>
+            <span class="stat-value">6</span>
+        </div>
+        <div class="stat-item">
+            <span>Bloqueadas:</span>
+            <span class="stat-value">8</span>
+        </div>
+        <div class="stat-item">
+            <span>Progreso:</span>
+            <span class="stat-value">61%</span>
+        </div>
+        <div class="stat-item">
+            <span>Nivel Promedio:</span>
+            <span class="stat-value">3.8</span>
+        </div>
+    </div>
+    
+    <script>
+        function showSkillInfo(skillName, description) {
+            alert(`${skillName}\n\n${description}\n\n¿Deseas invertir puntos en esta habilidad?`);
+        }
+        
+        // Animación de carga inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            const skillNodes = document.querySelectorAll('.skill-node');
+            skillNodes.forEach((node, index) => {
+                setTimeout(() => {
+                    node.style.opacity = '0';
+                    node.style.transform = 'scale(0.8)';
+                    node.style.transition = 'all 0.5s ease';
+                    setTimeout(() => {
+                        node.style.opacity = '1';
+                        node.style.transform = 'scale(1)';
+                    }, 100);
+                }, index * 50);
+            });
+        });
+        
+        // Efecto hover mejorado
+        document.querySelectorAll('.skill-node').forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1) rotate(2deg)';
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>
